@@ -1,1 +1,1 @@
-# eimina-o_gauss
+# eLimina-o_gauss
