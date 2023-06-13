@@ -12,20 +12,34 @@
       margin-top: 20px;
     }
   </style>
+  <script>
+    let counter = 4;
+    function addField() {
+      let container = document.getElementById('field-container');
+      let newField = document.createElement('div');
+      newField.classList.add('center');
+      newField.innerHTML = `<input type="text" id="valor${counter}" name="valor${counter}" placeholder="Valor ${counter}">`;
+      container.insertBefore(newField, document.getElementById('button-container'));
+      counter++;
+    }
+  </script>
 </head>
 
 <body>
   <form>
-    <div class="center">
-      <input type="text" id="valor1" name="valor1" placeholder="Valor 1">
+    <div id="field-container">
+      <div class="center">
+        <input type="text" id="valor1" name="valor1" placeholder="Valor 1">
+      </div>
+      <div class="center">
+        <input type="text" id="valor2" name="valor2" placeholder="Valor 2">
+      </div>
+      <div class="center">
+        <input type="text" id="valor3" name="valor3" placeholder="Valor 3">
+      </div>
     </div>
-    <div class="center">
-      <input type="text" id="valor2" name="valor2" placeholder="Valor 2">
-    </div>
-    <div class="center">
-      <input type="text" id="valor3" name="valor3" placeholder="Valor 3">
-    </div>
-    <div class="button-container center">
+    <div id="button-container" class="button-container center">
+      <input type="button" onclick="addField()" value="Adicionar campo">
       <input type="button" id="gaus" value="Calculo Gaus">
       <input type="button" id="seidel" value="Calculo Seidel">
     </div>
