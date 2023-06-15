@@ -2,46 +2,211 @@
 <html>
 
 <head>
-  <style>
-    .center {
-      display: flex;
-      justify-content: center;
+  <link rel="stylesheet" href="index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@700&display=swap" rel="stylesheet">
+
+
+  <script>
+    function createFields() {
+      let size = parseInt(document.getElementById('matrix-size').value);
+      if (isNaN(size) || size <= 0) {
+        alert("Insira um valor válido para o tamanho da matriz.");
+        return;
+      }
+
+      let container = document.getElementById('field-container');
+      container.innerHTML = '';
+
+      for (let i = 1; i <= size; i++) {
+        let row = document.createElement('div');
+        row.classList.add('center', 'matrix-row');
+
+        // Adicionar input para a coluna adicional
+        let inputExtra = document.createElement('input');
+        inputExtra.type = 'text';
+        inputExtra.id = `valor${i}_extra`;
+        inputExtra.name = `valor${i}_extra`;
+        inputExtra.placeholder = '';
+        row.appendChild(inputExtra);
+
+        for (let j = 1; j <= size; j++) {
+          let input = document.createElement('input');
+          input.type = 'text';
+          input.id = `valor${i}_${j}`;
+          input.name = `valor${i}_${j}`;
+          input.placeholder = '';
+          row.appendChild(input);
+        }
+        container.appendChild(row);
+      }
     }
 
-    .button-container {
-      margin-top: 20px;
+    function performGaussElimination() {
+      let size = parseInt(document.getElementById('matrix-size').value);
+      let matrix = [];
+
+      for (let i = 1; i <= size; i++) {
+        let row = [];
+        for (let j = 1; j <= size; j++) {
+          let inputId = `valor${i}_${j}`;
+          let inputValue = parseFloat(document.getElementById(inputId).value);
+          row.push(inputValue);
+        }
+        matrix.push(row);
+      }
+
+      let matrixExtra = [];
+      for (let i = 1; i <= size; i++) {
+        let inputExtraId = `valor${i}_extra`;
+        let inputExtraValue = parseFloat(document.getElementById(inputExtraId).value);
+        matrixExtra.push(inputExtraValue);
+      }
+
+      for (let i = 0; i < size; i++) {
+        matrix[i].push(matrixExtra[i]);
+      }
+
+      console.log(matrix);
+      let A = matrix;
+
+      for (let i = 0; i < size - 1; i++) {
+        for (let j = i + 1; j < size; j++) {
+          let ratio = A[j][i] / A[i][i];
+          for (let k = i; k < size + 1; k++) {
+            A[j][k] -= ratio * A[i][k];
+          }
+        }
+      }
+
+      let resultContainer = document.getElementById('result-container');
+      resultContainer.innerHTML = ''; // Limpa o resultado anterior
+      let xValues = performBackSubstitution(A);
+      let resultHTML = `
+      <div>
+  <p style="text-align: center;">Resultado:</p>
+  <pre style="text-align: center; font-family: 'Quicksand', sans-serif;">Matriz A após a eliminação de Gauss:</pre>
+  ${A.map(row => `<pre class="matrix-row" style="font-family: 'Quicksand', sans-serif;">${row.map(value => value.toFixed(3)).join('   ')}</pre>`).join('')}
+  <pre style="text-align: center; font-family: 'Quicksand', sans-serif;">Valores de x:</pre>
+  ${generateXValuesHTML(xValues)}
+</div>
+
+      `;
+      resultContainer.innerHTML = resultHTML;
     }
-  </style>
-  <script>
-    let counter = 4;
-    function addField() {
-      let container = document.getElementById('field-container');
-      let newField = document.createElement('div');
-      newField.classList.add('center');
-      newField.innerHTML = `<input type="text" id="valor${counter}" name="valor${counter}" placeholder="Valor ${counter}">`;
-      container.insertBefore(newField, document.getElementById('button-container'));
-      counter++;
+
+    function performGaussSeidel() {
+      let size = parseInt(document.getElementById('matrix-size').value);
+      let matrix = [];
+
+      for (let i = 1; i <= size; i++) {
+        let row = [];
+        for (let j = 1; j <= size; j++) {
+          let inputId = `valor${i}_${j}`;
+          let inputValue = parseFloat(document.getElementById(inputId).value);
+          row.push(inputValue);
+        }
+        matrix.push(row);
+      }
+
+      let matrixExtra = [];
+      for (let i = 1; i <= size; i++) {
+        let inputExtraId = `valor${i}_extra`;
+        let inputExtraValue = parseFloat(document.getElementById(inputExtraId).value);
+        matrixExtra.push(inputExtraValue);
+      }
+
+      let b = matrixExtra;
+
+      console.log(matrix);
+      console.log(b);
+      let A = matrix;
+
+      let x = new Array(size).fill(0);
+      let xNew = new Array(size);
+
+      const epsilon = 0.001;
+      let iteration = 0;
+      let maxDiff; // Variável maxDiff definida no escopo do loop
+
+      do {
+        maxDiff = 0; // Inicializa maxDiff a cada iteração
+        for (let i = 0; i < size; i++) {
+          let sum1 = 0;
+          let sum2 = 0;
+          for (let j = 0; j < size; j++) {
+            if (j < i) {
+              sum1 += A[i][j] * xNew[j];
+            } else if (j > i) {
+              sum2 += A[i][j] * x[j];
+            }
+          }
+          xNew[i] = (b[i] - sum1 - sum2) / A[i][i];
+          maxDiff = Math.max(maxDiff, Math.abs(xNew[i] - x[i])); // Calcula a maior diferença na iteração atual
+          A[i][size] = xNew[i]; // Atualiza os valores de A com os novos valores de x
+        }
+
+        x = xNew.slice();
+
+        iteration++;
+      } while (maxDiff > epsilon && iteration < 100);
+
+      console.log('Gauss-Seidel Result:');
+      console.log(x);
+
+      let resultContainer = document.getElementById('result-container');
+      resultContainer.innerHTML = ''; // Limpa o resultado anterior
+      let resultHTML = `
+      <div>
+  <p style="text-align: center;">Resultado:</p>
+  <pre style="text-align: center; font-family: 'Quicksand', sans-serif;">Matriz A após Gauss-Seidel:</pre>
+  ${A.map(row => `<pre class="matrix-row" style="font-family: 'Quicksand', sans-serif;">${row.map(value => value.toFixed(3)).join('   ')}</pre>`).join('')}
+  <pre style="text-align: center; font-family: 'Quicksand', sans-serif;">Valores de x (Gauss-Seidel):</pre>
+  ${generateXValuesHTML(x)}
+</div>
+
+  `;
+      resultContainer.innerHTML += resultHTML;
+    }
+
+
+    function performBackSubstitution(A) {
+      let size = A.length;
+      let xValues = new Array(size).fill(0);
+
+      for (let i = size - 1; i >= 0; i--) {
+        let sum = 0;
+        for (let j = i + 1; j < size; j++) {
+          sum += A[i][j] * xValues[j];
+        }
+        xValues[i] = (A[i][size] - sum) / A[i][i];
+      }
+
+      return xValues;
+    }
+
+    function generateXValuesHTML(xValues) {
+      let xValuesHTML = xValues.map(value => `<pre style="text-align: center; font-family: 'Quicksand', sans-serif;">[${value.toFixed(3)}]</pre>`);
+      return xValuesHTML.join('\n');
     }
   </script>
 </head>
 
 <body>
   <form>
+    <div>
+      <label for="matrix-size" class="matrix-label">Tamanho da Matriz:</label>
+      <input type="number" id="matrix-size" name="matrix-size" min="1" max="10">
+      <button type="button" onclick="createFields()">Criar Campos</button>
+    </div>
     <div id="field-container">
-      <div class="center">
-        <input type="text" id="valor1" name="valor1" placeholder="Valor 1">
-      </div>
-      <div class="center">
-        <input type="text" id="valor2" name="valor2" placeholder="Valor 2">
-      </div>
-      <div class="center">
-        <input type="text" id="valor3" name="valor3" placeholder="Valor 3">
-      </div>
+      <!-- Campos de entrada serão gerados aqui -->
     </div>
     <div id="button-container" class="button-container center">
-      <input type="button" onclick="addField()" value="Adicionar campo">
-      <input type="button" id="gaus" value="Calculo Gaus">
-      <input type="button" id="seidel" value="Calculo Seidel">
+      <button type="button" onclick="performGaussElimination()">Cálculo Gauss</button>
+      <button type="button" onclick="performGaussSeidel()">Cálculo Seidel</button>
+    </div>
+    <div id="result-container">
+      <!-- O resultado será exibido aqui -->
     </div>
   </form>
 </body>

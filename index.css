@@ -1,0 +1,78 @@
+/* index.css */
+body {
+  background-color: navy;
+  font-family: "Quicksand", sans-serif;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.button-container button {
+  margin-right: 10px;
+  border-radius: 5px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+form input[type="number"],
+form button {
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 14px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  color: navy;
+}
+
+button {
+  font-family: "Quicksand", sans-serif;
+}
+form button {
+  margin-top: 10px;
+}
+
+#result-container {
+  margin-top: 20px;
+  font-family: "Quicksand", sans-serif;
+  text-align: center;
+  color: white;
+  font-size: 16px;
+}
+
+.matrix-cell {
+  width: 50px;
+  text-align: center;
+  /* Alinhar o texto no centro da célula */
+}
+
+.matrix-label {
+  font-family: "Quicksand", sans-serif;
+  color: white;
+}
+
+.matrix-row {
+  white-space: pre-wrap;
+  display: flex;
+  justify-content: center;
+}
+
+input[type="text"] {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
